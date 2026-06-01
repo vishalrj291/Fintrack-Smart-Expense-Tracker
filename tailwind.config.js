@@ -5,6 +5,15 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
   darkMode: 'class',
+  safelist: [
+    // Dynamic sidebar classes — must not be purged
+    'translate-x-0',
+    '-translate-x-full',
+    'lg:translate-x-0',
+    'lg:pl-60',
+    'hidden',
+    'lg:hidden',
+  ],
   theme: {
     extend: {
       colors: {
@@ -35,6 +44,9 @@ export default {
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace'],
+      },
+      spacing: {
+        '60': '15rem', // 240px — sidebar width
       },
       animation: {
         'float':       'float 6s ease-in-out infinite',
