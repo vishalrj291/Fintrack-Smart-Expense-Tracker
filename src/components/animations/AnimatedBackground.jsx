@@ -131,7 +131,7 @@ export default function AnimatedBackground() {
       />
 
       <motion.div
-        className="absolute rounded-full blur-3xl opacity-15"
+        className="absolute rounded-full blur-3xl opacity-10"
         style={{
           width: '500px',
           height: '500px',
