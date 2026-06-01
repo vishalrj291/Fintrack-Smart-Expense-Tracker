@@ -198,11 +198,10 @@ export function HeroSection() {
               <div className="gradient-text" style={{ fontSize: '28px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace', display: 'block' }}>
                 {stat.prefix}
                 <CountUp end={stat.value} decimals={stat.value % 1 !== 0 ? 1 : 0} duration={2.5} delay={1} />
-                {stat.suffix}
               </div>
               <p style={{ fontSize: '13px', color: '#6b7280', marginTop: '4px' }}>{stat.label}</p>
             </div>
-          ))}
+          ))} 
         </div>
       </FadeIn>
     </section>
