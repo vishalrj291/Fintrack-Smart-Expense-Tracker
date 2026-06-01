@@ -58,7 +58,8 @@ function DemoSection() {
             </div>
 
             <div style={{ padding: '24px', background: 'rgba(14,14,26,0.3)' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '20px' }} className="grid-cols-1 lg:grid-cols-3">
+              {/* Responsive grid using CSS auto-fit */}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '20px' }}>
                 {/* Left side */}
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                   {/* Stats */}
@@ -118,13 +119,12 @@ function DemoSection() {
                         style={{
                           display: 'flex', alignItems: 'center', gap: '10px',
                           padding: '12px 14px', borderBottom: '1px solid rgba(31,31,53,0.5)',
-                          cursor: 'pointer', transition: 'background 0.2s',
+                          cursor: 'pointer',
                         }}
                         initial={{ opacity: 0, x: 10 }}
                         whileInView={{ opacity: 1, x: 0 }}
                         transition={{ delay: 0.5 + i * 0.08 }}
-                        onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,255,255,0.03)'}
-                        onMouseLeave={e => e.currentTarget.style.background = 'none'}
+                        whileHover={{ background: 'rgba(255,255,255,0.03)' }}
                       >
                         <span style={{ fontSize: '18px' }}>{t.icon}</span>
                         <div style={{ flex: 1, minWidth: 0 }}>
@@ -154,19 +154,22 @@ export default function LandingPage({ theme, setTheme }) {
       initial="initial"
       animate="enter"
       exit="exit"
-      style={{ position: 'relative', minHeight: '100vh' }}
+      style={{ minHeight: '100vh', backgroundColor: '#070710' }}
     >
+      {/* Animated background — fixed, z=0 */}
       <AnimatedBackground />
-      <div style={{ position: 'relative', zIndex: 10 }}>
-        <Navbar theme={theme} setTheme={setTheme} />
-        <HeroSection />
-        <TrustSection />
-        <FeaturesSection />
-        <DemoSection />
-        <TestimonialsSection />
-        <FAQSection />
-        <Footer />
-      </div>
+
+      {/* All content above background — z=1 */}
+      <div style={{ position: 'relative', zIndex: 1 }}>
+  <Navbar theme={theme} setTheme={setTheme} />
+  <HeroSection />
+  <TrustSection />
+  <FeaturesSection />
+  <DemoSection />
+  <TestimonialsSection />
+  <FAQSection />
+  <Footer />
+</div>
     </motion.div>
   );
 }
