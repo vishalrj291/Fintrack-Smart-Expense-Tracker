@@ -27,10 +27,8 @@ export default function App() {
   const [theme, setTheme] = useState('dark');
 
   return (
-    <div className={theme}>
-      <BrowserRouter>
-        <AnimatedRoutes theme={theme} setTheme={setTheme} />
-      </BrowserRouter>
-    </div>
+    <BrowserRouter>
+      <AnimatedRoutes theme={theme} setTheme={setTheme} />
+    </BrowserRouter>
   );
 }
