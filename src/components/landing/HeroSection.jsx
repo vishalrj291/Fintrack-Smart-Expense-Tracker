@@ -1,7 +1,8 @@
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { FadeIn, StaggerChildren, staggerItem, FloatingElement } from '../animations/AnimationWrappers';
-import CountUp from 'react-countup';
+import CountUpPackage from 'react-countup';
+const CountUp = CountUpPackage?.default || CountUpPackage;
 
 // ─── Hero Section ─────────────────────────────────────────────────────────────
 export function HeroSection() {

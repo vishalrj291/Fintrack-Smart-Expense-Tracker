@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import CountUp from 'react-countup';
+import CountUpPackage from 'react-countup';
+const CountUp = CountUpPackage?.default || CountUpPackage;
 import { financialOverview } from '../../data/mockData';
 
 const cards = [
