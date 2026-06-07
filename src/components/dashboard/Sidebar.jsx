@@ -11,11 +11,6 @@ const icons = {
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 14l6-6m-5.5.5h.01m4.99 5h.01M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16l3.5-2 3.5 2 3.5-2 3.5 2z" />
     </svg>
   ),
-  TrendingUp: () => (
-    <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-    </svg>
-  ),
   PieChart: () => (
     <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z" />
@@ -48,18 +43,48 @@ const icons = {
 };
 
 const navItems = [
-  { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard' },
-  { id: 'expenses', label: 'Expenses', icon: 'Receipt' },
-  { id: 'income', label: 'Income', icon: 'TrendingUp' },
-  { id: 'budgets', label: 'Budgets', icon: 'PieChart' },
-  { id: 'analytics', label: 'Analytics', icon: 'BarChart3' },
-  { id: 'goals', label: 'Goals', icon: 'Target' },
-  { id: 'reports', label: 'Reports', icon: 'FileText' },
-  { id: 'settings', label: 'Settings', icon: 'Settings' },
+  { id: 'dashboard', label: 'Dashboard', icon: 'LayoutDashboard', group: 'main' },
+  { id: 'expenses', label: 'Expenses', icon: 'Receipt', group: 'main' },
+  { id: 'budgets', label: 'Budgets', icon: 'PieChart', group: 'main' },
+  { id: 'analytics', label: 'Analytics', icon: 'BarChart3', group: 'main' },
+  { id: 'goals', label: 'Goals', icon: 'Target', group: 'tools' },
+  { id: 'reports', label: 'Reports', icon: 'FileText', group: 'tools' },
+  { id: 'settings', label: 'Settings', icon: 'Settings', group: 'tools' },
 ];
 
 export default function Sidebar({ isOpen, setSidebarOpen, activeSection, setActiveSection }) {
-  // Pure CSS approach: translate sidebar using inline style only — no Tailwind translate conflict
+  const mainItems = navItems.filter(i => i.group === 'main');
+  const toolItems = navItems.filter(i => i.group === 'tools');
+
+  const renderItem = (item) => {
+    const IconComponent = icons[item.icon];
+    const isActive = activeSection === item.id;
+    return (
+      <motion.button
+        key={item.id}
+        onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
+        className={`sidebar-item${isActive ? ' active' : ''}`}
+        whileHover={{ x: 3 }}
+        whileTap={{ scale: 0.97 }}
+      >
+        <span style={{ color: isActive ? '#10b981' : '#64748b', display: 'flex', alignItems: 'center' }}>
+          {IconComponent && <IconComponent />}
+        </span>
+        <span style={{ color: isActive ? 'white' : '#94a3b8' }}>{item.label}</span>
+        {isActive && (
+          <motion.div
+            layoutId="sidebarActiveIndicator"
+            style={{
+              marginLeft: 'auto', width: '6px', height: '6px',
+              borderRadius: '50%', background: '#10b981', flexShrink: 0,
+              boxShadow: '0 0 8px rgba(16,185,129,0.6)',
+            }}
+          />
+        )}
+      </motion.button>
+    );
+  };
+
   const sidebarStyle = {
     position: 'fixed',
     top: '64px',
@@ -69,109 +94,62 @@ export default function Sidebar({ isOpen, setSidebarOpen, activeSection, setActi
     zIndex: 40,
     display: 'flex',
     flexDirection: 'column',
-    borderRight: '1px solid #1f1f35',
-    background: 'rgba(14,14,26,0.97)',
+    borderRight: '1px solid #1e2d45',
+    background: 'rgba(11,15,20,0.97)',
     backdropFilter: 'blur(20px)',
     WebkitBackdropFilter: 'blur(20px)',
     transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
   };
 
   return (
-    <aside style={sidebarStyle} className={isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}>
-      <div style={{ flex: 1, overflowY: 'auto', padding: '16px' }}>
+    <aside
+      style={sidebarStyle}
+      className={isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+    >
+      <div style={{ flex: 1, overflowY: 'auto', padding: '12px' }}>
         <p style={{
-          fontSize: '11px', fontWeight: 600, color: '#4b5563',
-          textTransform: 'uppercase', letterSpacing: '0.1em',
-          padding: '8px 16px', marginBottom: '4px',
+          fontSize: '10px', fontWeight: 700, color: '#334155',
+          textTransform: 'uppercase', letterSpacing: '0.12em',
+          padding: '8px 12px', marginBottom: '4px',
         }}>
           Main Menu
         </p>
-        {navItems.slice(0, 5).map(item => {
-          const IconComponent = icons[item.icon];
-          const isActive = activeSection === item.id;
-          return (
-            <motion.button
-              key={item.id}
-              onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
-              className="sidebar-item"
-              style={isActive ? {
-                color: 'white',
-                background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.1))',
-                border: '1px solid rgba(99,102,241,0.25)',
-              } : {}}
-              whileHover={{ x: 2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span style={{ color: isActive ? '#818cf8' : '#6b7280', display: 'flex', alignItems: 'center' }}>
-                {IconComponent && <IconComponent />}
-              </span>
-              <span>{item.label}</span>
-              {isActive && (
-                <motion.div
-                  layoutId="activeIndicator"
-                  style={{
-                    marginLeft: 'auto', width: '6px', height: '6px',
-                    borderRadius: '50%', background: '#818cf8',
-                    flexShrink: 0,
-                  }}
-                />
-              )}
-            </motion.button>
-          );
-        })}
+        {mainItems.map(renderItem)}
 
         <p style={{
-          fontSize: '11px', fontWeight: 600, color: '#4b5563',
-          textTransform: 'uppercase', letterSpacing: '0.1em',
-          padding: '8px 16px', marginTop: '16px', marginBottom: '4px',
+          fontSize: '10px', fontWeight: 700, color: '#334155',
+          textTransform: 'uppercase', letterSpacing: '0.12em',
+          padding: '8px 12px', marginTop: '16px', marginBottom: '4px',
         }}>
           Tools
         </p>
-        {navItems.slice(5).map(item => {
-          const IconComponent = icons[item.icon];
-          const isActive = activeSection === item.id;
-          return (
-            <motion.button
-              key={item.id}
-              onClick={() => { setActiveSection(item.id); setSidebarOpen(false); }}
-              className="sidebar-item"
-              style={isActive ? {
-                color: 'white',
-                background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.1))',
-                border: '1px solid rgba(99,102,241,0.25)',
-              } : {}}
-              whileHover={{ x: 2 }}
-              whileTap={{ scale: 0.98 }}
-            >
-              <span style={{ color: isActive ? '#818cf8' : '#6b7280', display: 'flex', alignItems: 'center' }}>
-                {IconComponent && <IconComponent />}
-              </span>
-              <span>{item.label}</span>
-            </motion.button>
-          );
-        })}
+        {toolItems.map(renderItem)}
       </div>
 
-      {/* Bottom user card */}
-      <div style={{ padding: '16px', borderTop: '1px solid #1f1f35' }}>
-        <div className="glass-card" style={{ padding: '16px', borderRadius: '12px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '12px' }}>
+      {/* User card */}
+      <div style={{ padding: '12px', borderTop: '1px solid #1e2d45' }}>
+        <div className="glass-card" style={{ padding: '14px', borderRadius: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
             <div style={{
               width: '36px', height: '36px', borderRadius: '10px', flexShrink: 0,
-              background: 'linear-gradient(135deg, #6366f1, #7c3aed)',
+              background: 'linear-gradient(135deg, #10b981, #059669)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: '12px', fontWeight: 700, color: 'white',
-            }}>AM</div>
+              fontFamily: 'JetBrains Mono, monospace',
+              boxShadow: '0 0 12px rgba(16,185,129,0.25)',
+            }}>VR</div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <p style={{ fontSize: '13px', fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>Alex Morgan</p>
-              <p style={{ fontSize: '11px', color: '#6b7280' }}>Pro Plan</p>
+              <p style={{ fontSize: '13px', fontWeight: 600, color: 'white', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                Vishal Raj
+              </p>
+              <p style={{ fontSize: '11px', color: '#475569' }}>Full Stack Dev · Pro</p>
             </div>
           </div>
-          <div style={{ fontSize: '11px', color: '#6b7280', marginBottom: '6px' }}>AI Credits: 847 / 1000</div>
+          <div style={{ fontSize: '11px', color: '#475569', marginBottom: '6px' }}>AI Credits: 847 / 1000</div>
           <div className="progress-bar">
             <motion.div
               className="progress-fill"
-              style={{ background: 'linear-gradient(90deg, #6366f1, #8b5cf6)' }}
+              style={{ background: 'linear-gradient(90deg, #10b981, #22d3ee)' }}
               initial={{ width: 0 }}
               animate={{ width: '84.7%' }}
               transition={{ duration: 1.2, delay: 0.5 }}

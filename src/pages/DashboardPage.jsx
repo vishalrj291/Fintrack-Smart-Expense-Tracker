@@ -1,142 +1,173 @@
-import { useState } from 'react';
-import { motion } from 'framer-motion';
-import AnimatedBackground from '../components/animations/AnimatedBackground';
+import { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import Navbar from '../components/dashboard/Navbar';
 import Sidebar from '../components/dashboard/Sidebar';
 import OverviewCards from '../components/dashboard/OverviewCards';
 import ChartsSection from '../components/dashboard/ChartsSection';
 import TransactionsList from '../components/dashboard/TransactionsList';
-import { BudgetTracker, GoalsSection } from '../components/dashboard/BudgetAndGoals';
 import AIInsightsPanel from '../components/dashboard/AIInsightsPanel';
+import { BudgetTracker, GoalsSection } from '../components/dashboard/BudgetAndGoals';
+import ExpensesPage from '../components/dashboard/ExpensesPage';
+import AnalyticsPage from '../components/dashboard/AnalyticsPage';
+import GoalsPage from '../components/dashboard/GoalsPage';
+import ReportsPage from '../components/dashboard/ReportsPage';
+import SettingsPage from '../components/dashboard/SettingsPage';
+import AddExpenseModal from '../components/dashboard/AddExpenseModal';
 import { pageVariants } from '../components/animations/AnimationWrappers';
+import { ExpenseProvider } from '../context/ExpenseContext';
 
-export default function DashboardPage({ theme, setTheme }) {
+function getGreeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Good morning';
+  if (hour < 17) return 'Good afternoon';
+  return 'Good evening';
+}
+
+function DashboardOverview({ onAddExpense }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.3 }}
+    >
+      {/* Header */}
+      <div style={{ marginBottom: '28px' }}>
+        <h1 style={{ fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 700, color: 'white', marginBottom: '6px' }}>
+          {getGreeting()}, Vishal 👋
+        </h1>
+        <p style={{ fontSize: '14px', color: '#475569' }}>
+          Here's your financial overview for May 2024
+        </p>
+      </div>
+
+      {/* Metric cards */}
+      <div style={{ marginBottom: '24px' }}>
+        <OverviewCards />
+      </div>
+
+      {/* Charts + AI Insights */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1fr)', gap: '20px', marginBottom: '24px' }}
+        className="grid-cols-1 lg:grid-cols-[2fr_1fr]">
+        <ChartsSection />
+        <AIInsightsPanel />
+      </div>
+
+      {/* Transactions + Budgets/Goals */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 3fr) minmax(0, 2fr)', gap: '20px', marginBottom: '24px' }}
+        className="grid-cols-1 xl:grid-cols-[3fr_2fr]">
+        <TransactionsList onAddClick={onAddExpense} />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <BudgetTracker />
+          <GoalsSection />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
+function BudgetsPage() {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35 }}
+    >
+      <div style={{ marginBottom: '24px' }}>
+        <h1 style={{ fontSize: '22px', fontWeight: 700, color: 'white', marginBottom: '4px' }}>Budgets</h1>
+        <p style={{ fontSize: '14px', color: '#475569' }}>Track and manage your spending limits</p>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '20px' }}>
+        <BudgetTracker />
+      </div>
+    </motion.div>
+  );
+}
+
+function DashboardContent({ activeSection, setActiveSection }) {
+  const [addOpen, setAddOpen] = useState(false);
+
+  const sections = {
+    dashboard: <DashboardOverview onAddExpense={() => setAddOpen(true)} />,
+    expenses: <ExpensesPage />,
+    budgets: <BudgetsPage />,
+    analytics: <AnalyticsPage />,
+    goals: <GoalsPage />,
+    reports: <ReportsPage />,
+    settings: <SettingsPage />,
+  };
+
+  return (
+    <>
+      <AnimatePresence mode="wait">
+        <motion.div key={activeSection} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: 0.25 }}>
+          {sections[activeSection] || sections.dashboard}
+        </motion.div>
+      </AnimatePresence>
+      <AddExpenseModal isOpen={addOpen} onClose={() => setAddOpen(false)} />
+    </>
+  );
+}
+
+export default function DashboardPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [activeSection, setActiveSection] = useState('dashboard');
 
+  // Close sidebar on route change for mobile
+  useEffect(() => {
+    setSidebarOpen(false);
+  }, [activeSection]);
+
   return (
-    <motion.div
-      variants={pageVariants}
-      initial="initial"
-      animate="enter"
-      exit="exit"
-      style={{ minHeight: '100vh', backgroundColor: '#070710' }}
-    >
-      {/* Animated background — fixed, behind everything */}
-      <AnimatedBackground />
-
-      {/* Navbar — fixed top bar */}
-      <Navbar
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        theme={theme}
-        setTheme={setTheme}
-      />
-
-      {/* Sidebar */}
-      <Sidebar
-        isOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        activeSection={activeSection}
-        setActiveSection={setActiveSection}
-      />
-
-      {/* Mobile overlay — close sidebar on tap */}
-      {sidebarOpen && (
-        <div
-          onClick={() => setSidebarOpen(false)}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(0,0,0,0.6)',
-            zIndex: 30,
-          }}
-          className="lg:hidden"
-        />
-      )}
-
-      {/* Main content — pushed right on desktop, full-width on mobile */}
-      <main
-        style={{
-          paddingTop: '64px',
-          minHeight: '100vh',
-          position: 'relative',
-          zIndex: 1,
-        }}
-        className="lg:pl-60"
+    <ExpenseProvider>
+      <motion.div
+        variants={pageVariants}
+        initial="initial"
+        animate="enter"
+        exit="exit"
+        style={{ minHeight: '100vh', backgroundColor: '#0b0f14' }}
       >
-        <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto' }}>
-          {/* Page header */}
-          <div style={{ marginBottom: '32px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '16px' }}>
-              <div>
-                <h1 style={{ fontSize: 'clamp(20px, 3vw, 26px)', fontWeight: 700, color: 'white', marginBottom: '4px' }}>
-                  Good morning, Alex 👋
-                </h1>
-                <p style={{ fontSize: '14px', color: '#6b7280' }}>
-                  Here's your financial snapshot for{' '}
-                  <span style={{ color: '#9ca3af' }}>May 2024</span>
-                </p>
-              </div>
+        {/* Mobile sidebar overlay */}
+        <AnimatePresence>
+          {sidebarOpen && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSidebarOpen(false)}
+              style={{
+                position: 'fixed', inset: 0, zIndex: 30,
+                background: 'rgba(0,0,0,0.6)',
+                backdropFilter: 'blur(4px)',
+              }}
+              className="lg:hidden"
+            />
+          )}
+        </AnimatePresence>
 
-              {/* Savings rate badge */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                <div style={{ textAlign: 'right' }}>
-                  <p style={{ fontSize: '12px', color: '#6b7280' }}>Savings rate this month</p>
-                  <p className="gradient-text" style={{ fontSize: '22px', fontWeight: 700, fontFamily: 'JetBrains Mono, monospace' }}>36.8%</p>
-                </div>
-                <div style={{
-                  width: '48px', height: '48px', borderRadius: '14px',
-                  background: 'linear-gradient(135deg, rgba(99,102,241,0.2), rgba(139,92,246,0.1))',
-                  border: '1px solid rgba(99,102,241,0.2)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '24px',
-                }}>📊</div>
-              </div>
-            </div>
+        <Navbar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
+
+        <Sidebar
+          isOpen={sidebarOpen}
+          setSidebarOpen={setSidebarOpen}
+          activeSection={activeSection}
+          setActiveSection={setActiveSection}
+        />
+
+        {/* Main content */}
+        <main
+          style={{
+            paddingTop: '64px',
+            paddingLeft: '0',
+            minHeight: '100vh',
+            transition: 'padding-left 0.3s ease',
+          }}
+          className="lg:pl-60"
+        >
+          <div style={{ padding: '28px 24px', maxWidth: '1400px', margin: '0 auto' }}>
+            <DashboardContent activeSection={activeSection} setActiveSection={setActiveSection} />
           </div>
-
-          {/* Overview Cards */}
-          <div style={{ marginBottom: '24px' }}>
-            <OverviewCards />
-          </div>
-
-          {/* Charts + AI Insights */}
-          <div style={{ marginBottom: '24px' }}>
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
-              gap: '24px',
-              alignItems: 'start',
-            }}>
-              <div style={{ gridColumn: 'span 1' }} className="xl:col-span-2-of-3">
-                <ChartsSection />
-              </div>
-              <div>
-                <AIInsightsPanel />
-              </div>
-            </div>
-          </div>
-
-          {/* Transactions + Budget + Goals */}
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 400px), 1fr))',
-            gap: '24px',
-            alignItems: 'start',
-          }}>
-            <div>
-              <TransactionsList />
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-              <BudgetTracker />
-              <GoalsSection />
-            </div>
-          </div>
-
-          {/* Bottom spacing */}
-          <div style={{ height: '40px' }} />
-        </div>
-      </main>
-    </motion.div>
+        </main>
+      </motion.div>
+    </ExpenseProvider>
   );
 }

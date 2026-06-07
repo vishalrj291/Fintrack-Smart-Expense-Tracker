@@ -4,14 +4,14 @@ import { features } from '../../data/mockData';
 
 export default function FeaturesSection() {
   return (
-    <section style={{ padding: '96px 24px' }}>
+    <section id="features" className="section-anchor" style={{ padding: '96px 24px' }}>
       <div style={{ maxWidth: '1300px', margin: '0 auto' }}>
         <FadeIn style={{ textAlign: 'center', marginBottom: '64px' }}>
           <div style={{
             display: 'inline-flex', alignItems: 'center', gap: '8px',
-            padding: '8px 16px', borderRadius: '9999px',
-            border: '1px solid rgba(99,102,241,0.2)', background: 'rgba(99,102,241,0.05)',
-            color: '#818cf8', fontSize: '13px', fontWeight: 500, marginBottom: '24px',
+            padding: '6px 16px', borderRadius: '9999px',
+            border: '1px solid rgba(16,185,129,0.2)', background: 'rgba(16,185,129,0.06)',
+            color: '#34d399', fontSize: '13px', fontWeight: 500, marginBottom: '24px',
           }}>
             ✦ Everything you need
           </div>
@@ -19,48 +19,63 @@ export default function FeaturesSection() {
             Finance management,{' '}
             <span className="gradient-text">reimagined</span>
           </h2>
-          <p style={{ color: '#9ca3af', fontSize: '18px', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
+          <p style={{ color: '#64748b', fontSize: '18px', maxWidth: '600px', margin: '0 auto', lineHeight: 1.6 }}>
             Every feature designed with intention. No bloat, no confusion — just the tools that actually move the needle.
           </p>
         </FadeIn>
 
-        <StaggerChildren staggerDelay={0.07} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: '16px' }}>
+        <StaggerChildren staggerDelay={0.07} style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px' }}>
           {features.map((feature, i) => (
             <motion.div key={i} variants={staggerItem}>
               <HoverCard>
                 <div
                   className="glass-card"
                   style={{
-                    padding: '24px', cursor: 'pointer', position: 'relative', overflow: 'hidden',
-                    borderColor: `${feature.color}15`, height: '100%',
-                    transition: 'border-color 0.3s',
+                    padding: '28px', cursor: 'pointer', position: 'relative', overflow: 'hidden',
+                    height: '100%', transition: 'border-color 0.3s',
+                    borderColor: `${feature.color}18`,
                   }}
                 >
+                  {/* Radial glow on hover */}
+                  <div style={{
+                    position: 'absolute', inset: 0,
+                    background: `radial-gradient(circle at top left, ${feature.color}08, transparent 60%)`,
+                    borderRadius: '1rem',
+                  }} />
+
+                  {/* Top accent line */}
+                  <div style={{
+                    position: 'absolute', top: 0, left: 0, right: 0, height: '2px',
+                    background: `linear-gradient(90deg, transparent, ${feature.color}60, transparent)`,
+                    borderRadius: '1rem 1rem 0 0',
+                  }} />
+
                   {/* Icon */}
                   <div style={{
-                    width: '48px', height: '48px', borderRadius: '12px',
-                    background: `${feature.color}18`, border: `1px solid ${feature.color}25`,
+                    width: '52px', height: '52px', borderRadius: '14px',
+                    background: `${feature.color}15`, border: `1px solid ${feature.color}25`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: '22px', marginBottom: '16px',
+                    fontSize: '24px', marginBottom: '20px', position: 'relative',
                   }}>
                     {feature.icon}
                   </div>
 
-                  <h3 style={{ fontSize: '14px', fontWeight: 600, color: 'white', marginBottom: '8px' }}>
+                  <h3 style={{ fontSize: '15px', fontWeight: 700, color: 'white', marginBottom: '10px', position: 'relative' }}>
                     {feature.title}
                   </h3>
-                  <p style={{ fontSize: '13px', color: '#6b7280', lineHeight: 1.6, marginBottom: '16px' }}>
+                  <p style={{ fontSize: '13px', color: '#64748b', lineHeight: 1.65, marginBottom: '20px', position: 'relative' }}>
                     {feature.description}
                   </p>
 
                   {/* Stats pill */}
                   <div style={{
                     display: 'inline-flex', alignItems: 'center', gap: '6px',
-                    padding: '4px 10px', borderRadius: '9999px', fontSize: '11px', fontWeight: 600,
-                    background: `${feature.color}15`, color: feature.color,
-                    border: `1px solid ${feature.color}25`,
+                    padding: '4px 12px', borderRadius: '9999px', fontSize: '12px', fontWeight: 600,
+                    background: `${feature.color}12`, color: feature.color,
+                    border: `1px solid ${feature.color}22`,
+                    position: 'relative',
                   }}>
-                    <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: feature.color }} />
+                    <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: feature.color }} />
                     {feature.stats}
                   </div>
                 </div>
